@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: "jdbc:mysql://localhost/post"
+    username: "root"
+    password: "Chldkdud00!"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  jwt:
+    access:
+      expiration: 6000000
+    refresh:
+      expiration: 1
+    secretKey: asjdhakljshfdkljsahdfkjahsdfkjhsadkfhkasdfhkjsah2kj3h123123134413523487
