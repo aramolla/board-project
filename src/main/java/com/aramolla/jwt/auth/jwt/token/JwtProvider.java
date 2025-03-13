@@ -55,12 +55,12 @@ public class JwtProvider {
         );
         jwtTokenFactory.saveRefreshToken(refreshToken, memberId);
         return new MemberTokens(accessToken, refreshToken);
-        // TODO: record 공부
     }
 
 
     // JWT 에서 토큰을 이용해 인증 정보를 추출 후 UsernamePasswordAuthenticationToken을 생성해 전달
     // Authentication 객체를 생성하고, 이를 SecurityContext에 설정하여 이후의 요청에서 인증 정보를 사용할 수 있도록 함.
+    // UsernamePasswordAuthenticationToken 사용자가 입력한 이름과 비밀번호를 저장하여 인증 과정에서 사용자의 신원을 확인하는 데 사용됨
     public Authentication getAuthentication(String token) {
         String memberId = jwtParser.getSubject(token);
         // 유저 권한은 하나밖에 없기에 singletonList로 진행함. 단 하나의 권한만 가질때 사용.

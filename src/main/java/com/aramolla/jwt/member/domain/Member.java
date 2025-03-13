@@ -43,7 +43,7 @@ public class Member extends BaseEntity {
     ) {
         this.email = email;
         this.password = password;
-        this.role = Role.MEMBER;
+        this.role = Role.MEMBER; // 기본값으로 'MEMBER'
     }
 
 }

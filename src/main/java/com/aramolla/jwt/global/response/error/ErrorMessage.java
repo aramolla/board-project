@@ -2,16 +2,16 @@ package com.aramolla.jwt.global.response.error;
 
 public enum ErrorMessage {
 
-    //  <((((((((((((((( MEMBER (((((((((((((((>
+    //  <============ MEMBER ============>
     NOT_FOUND_MEMBER("ERROR - 회원을 찾을 수 없습니다."),
     BAD_REQUEST_MEMBER("ERROR - 잘못된 회원 요청 에러"),
     BAD_REQUEST_PASSWORD("ERROR - 잘못된 비밀번호 요청 에러"),
     DUPLICATE_USERNAME("ERROR - 회원가입 ID 중복 에러"),
-    //  <((((((((((((((( POST (((((((((((((((>
+    //  <============ POST ============>
     DUPLICATE_NICKNAME("ERROR - 회원가입 닉네임 중복"),
     NOT_FOUND_POST("ERROR - 게시물을 찾을 수 없습니다."),
     BAD_REQUEST_POST("ERROR - 잘못된 게시물 요청"),
-    //  <((((((((((((((( JWT (((((((((((((((>
+    //  <============ JWT ============>
     TOKEN_EXPIRED("ERROR - JWT 토큰 만료 에러"),
     TOKEN_ERROR("ERROR - 잘못된 JWT 토큰 에러"),
     BAD_REQUEST_TOKEN("ERROR - 잘못된 토큰 요청 에러"),
@@ -21,7 +21,7 @@ public enum ErrorMessage {
     TOKEN_VALIDATION_TRY_FAILED("ERROR - 토큰 인증 실패"),
     TOKEN_NOT_EXPIRED("ERROR - 토큰 탈취 - 만료되지 않은 상태에서 재발급 요청으로 인해 토큰을 폐기합니다."),
     TOKEN_TAKE_OVER("ERROR - 토큰 탈취 - 토큰을 폐기합니다"),
-    //  <((((((((((((((( ETC (((((((((((((((>
+    //  <============ ETC ============>
     UNAUTHORIZED("ERROR - Unauthorized 에러"), // 인증되지 않은 사용자
     FORBIDDEN("ERROR - Forbidden 에러"), // 권한 없을 때
     PREVENT_GET_ERROR("Status 204 - 리소스 및 리다이렉트 GET 호출 에러 방지"),

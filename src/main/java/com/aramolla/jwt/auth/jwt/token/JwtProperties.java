@@ -21,7 +21,7 @@ public class JwtProperties {
     @Value("${spring.jwt.refresh.expiration}")
     Long refreshTokenExpireTime;
 
-    public SecretKey getSecretKey() {
+    public SecretKey getSecretKey() { // 시크릿 키를 객체 변수로 암호화
         return new SecretKeySpec(
             secret.getBytes(StandardCharsets.UTF_8),
             Jwts.SIG.HS256.key().build().getAlgorithm()

@@ -30,7 +30,7 @@ public class JwtTokenFactory {
         String category,
         Long expiredMs
     ) {
-        Date date = new Date();
+        Date date = new Date(); // 토큰 발행 시간
         Date validity = new Date(date.getTime() + expiredMs); // 만료 기간 설정
 
         return Jwts.builder()
@@ -38,7 +38,7 @@ public class JwtTokenFactory {
             .claim(CATEGORY_KEY, category) // claim payload
             .claim(AUTHORITIES_KEY, role)
             .expiration(validity)
-            .signWith(key)
+            .signWith(key) //시크릿키로 시그니처를 만들어 암호화
             .compact();
     }
     // RT 생성 후 DB 저장

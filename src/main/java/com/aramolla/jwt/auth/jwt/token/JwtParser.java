@@ -27,7 +27,7 @@ public class JwtParser {
             .getSubject();
     }
 
-    // 권한들고오는 함수
+    // role 들고오는 함수
     public String getAuthority(final String token) {
         return parseToken(token)
             .getPayload()
@@ -37,7 +37,7 @@ public class JwtParser {
     public Jws<Claims> parseToken(String token) { // 해당
         try {
             return Jwts.parser().verifyWith(jwtProperties.getSecretKey()).build()
-                .parseSignedClaims(token);
+                .parseSignedClaims(token); // 토큰이 우리 서버에서 생성되었는지, 우리가 가지고 있는 키와 맞는지 확인
         } catch (ExpiredJwtException e) {
             throw new IllegalArgumentException(ErrorCode.TOKEN_EXPIRED.getMessage()); //토큰 기간 만료
         } catch (Exception e) {

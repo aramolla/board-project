@@ -2,14 +2,12 @@ package com.aramolla.jwt.auth.service;
 
 
 import com.aramolla.jwt.auth.dto.request.LoginRequest;
-import com.aramolla.jwt.auth.jwt.domain.RefreshToken;
 import com.aramolla.jwt.auth.jwt.dto.MemberTokens;
 import com.aramolla.jwt.auth.jwt.token.JwtCleaner;
 import com.aramolla.jwt.auth.jwt.token.JwtProvider;
 import com.aramolla.jwt.auth.jwt.token.JwtValidator;
 import com.aramolla.jwt.member.domain.Member;
 import com.aramolla.jwt.auth.dto.request.MemberCreateRequest;
-import com.aramolla.jwt.member.domain.Role;
 import com.aramolla.jwt.member.repository.MemberRepository;
 import com.aramolla.jwt.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -32,12 +30,12 @@ public class AuthService {
 
     public void create(MemberCreateRequest request) {
         // 1. 회원 id && nickname 존재 하는지 확인한다.
-        if (memberRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("존재하는 이메일 입니다." + request.getEmail());
+        if (memberRepository.existsByEmail(request.email())) {
+            throw new IllegalArgumentException("존재하는 이메일 입니다." + request.email());
         }
         Member member = Member.builder()
-            .email(request.getEmail())
-            .password(bCryptPasswordEncoder.encode(request.getPassword()))
+            .email(request.email())
+            .password(bCryptPasswordEncoder.encode(request.password()))
             .build();
 
         memberRepository.save(member);
