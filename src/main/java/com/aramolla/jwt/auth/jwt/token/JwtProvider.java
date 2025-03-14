@@ -4,6 +4,9 @@ package com.aramolla.jwt.auth.jwt.token;
 import com.aramolla.jwt.auth.jwt.domain.RefreshToken;
 import com.aramolla.jwt.auth.jwt.dto.MemberTokens;
 import com.aramolla.jwt.auth.jwt.repository.RefreshTokenRepository;
+import com.aramolla.jwt.global.response.error.ErrorCode;
+import com.aramolla.jwt.member.domain.Role;
+import io.jsonwebtoken.JwtException;
 import java.util.Collections;
 import javax.crypto.SecretKey;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,23 +25,28 @@ public class JwtProvider {
     private final SecretKey secretKey;
     private final Long accessTokenExpireTime;
     private final Long refreshTokenExpireTime;
+    private final JwtValidator jwtValidator;
+    private final JwtCleaner jwtCleaner;
 
     // 스프링 Bean 으로 등록되어 있어 자동으로 의존성이 주입된다.jwtParser 와 jwtProperties는 Bean으로 등록되어있어야함.
     public JwtProvider(
         JwtParser jwtParser,
         JwtTokenFactory jwtTokenFactory,
         RefreshTokenRepository refreshTokenRepository,
-        JwtProperties jwtProperties
-    ) {
+        JwtProperties jwtProperties,
+        JwtValidator jwtValidator,
+        JwtCleaner jwtCleaner) {
         this.jwtParser = jwtParser;
         this.jwtTokenFactory = jwtTokenFactory;
         this.refreshTokenRepository = refreshTokenRepository;
         this.secretKey = jwtProperties.getSecretKey();
         this.accessTokenExpireTime = jwtProperties.getAccessTokenExpireTime();
         this.refreshTokenExpireTime = jwtProperties.getRefreshTokenExpireTime();
+        this.jwtValidator = jwtValidator;
+        this.jwtCleaner = jwtCleaner;
     }
 
-    public MemberTokens createTokensAndSaveRefreshToken(Long memberId, String roleType) {
+    public MemberTokens createTokensAndSaveRefreshToken(Long memberId, Role roleType) {
         String accessToken = jwtTokenFactory.createToken(
             memberId,
             secretKey,
@@ -53,8 +61,27 @@ public class JwtProvider {
             REFRESH,
             refreshTokenExpireTime
         );
-        jwtTokenFactory.saveRefreshToken(refreshToken, memberId);
+        jwtTokenFactory.saveRefreshToken(refreshToken, memberId, roleType);
         return new MemberTokens(accessToken, refreshToken);
+    }
+
+    public MemberTokens reissueToken(String refreshToken) {
+        if(!jwtValidator.isValidateTokens(refreshToken)){ // 리프레시 토큰 유효성 검증
+            throw new JwtException(ErrorCode.TOKEN_ERROR.getMessage() + refreshToken);
+        }
+        RefreshToken storedToken = getRefreshTokenInfo(refreshToken); // 입력받은 리프레시 토큰과 일치하는 storedToken(저장된 refreshToken) 조회
+        Long memberId = storedToken.getMemberId();
+        jwtCleaner.deleteRefreshToken(memberId); // 기존 토큰 삭제
+
+        if (!refreshToken.equals(storedToken.getRefreshToken())) { // 리프레시 토큰 일치 여부 확인
+            throw new JwtException(ErrorCode.TOKEN_ERROR.getMessage() + refreshToken);
+        }
+        // 새로운 토큰 생성 및 저장
+        Role role= storedToken.getRole();
+
+        String newAccessToken = createTokensAndSaveRefreshToken(memberId, role).accessToken();
+        String newRefreshToken = createTokensAndSaveRefreshToken(memberId, role).refreshToken();
+        return new MemberTokens(newAccessToken, newRefreshToken);
     }
 
 
@@ -70,9 +97,9 @@ public class JwtProvider {
             Collections.singletonList(authority));
     }
 
-    public RefreshToken getRefreshTokenInfo(Long id) {
-        return refreshTokenRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Invalid refresh token"));
+    public RefreshToken getRefreshTokenInfo(String refreshToken) {
+        return refreshTokenRepository.findByRefreshToken(refreshToken) // 저장된 refreshToken 찾아서 반환
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 refresh token"));
         // TODO: 공부하세요. Optional && orElseThrow()
     }
 

@@ -15,5 +15,5 @@ spring:
     access:
       expiration: 6000000
     refresh:
-      expiration: 1
+      expiration: 86400000
     secretKey: asjdhakljshfdkljsahdfkjahsdfkjhsadkfhkasdfhkjsah2kj3h123123134413523487

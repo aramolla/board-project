@@ -10,6 +10,7 @@ import com.aramolla.jwt.global.response.success.SuccessCode;
 import com.aramolla.jwt.util.CookieUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 @RestController
+@Slf4j
 public class AuthController {
 
     private final AuthService authService;
@@ -45,8 +47,10 @@ public class AuthController {
     @PostMapping("/reissue")
     public ResponseEntity<ResponseData<AccessTokenResponse>> reissue(HttpServletResponse response,
         @CookieValue("refresh_token") final String refreshTokenRequest) {
-        MemberTokens memberTokens = authService.reissue(refreshTokenRequest);
 
+        log.info("refresh Token: " + refreshTokenRequest);
+        MemberTokens memberTokens = authService.reissue(refreshTokenRequest);
+        // 같은 이름이 있다면 기존에 있던 쿠키 덮어짐.
         response.addCookie(CookieUtil.createCookie("refresh_token", memberTokens.refreshToken()));
         return ResponseData.success(SuccessCode.REISSUE_SUCCESS, new AccessTokenResponse(memberTokens.accessToken()));
 

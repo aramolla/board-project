@@ -2,10 +2,18 @@ package com.aramolla.jwt.auth.jwt.token;
 
 import com.aramolla.jwt.auth.jwt.dto.TokenInfo;
 import com.aramolla.jwt.auth.jwt.repository.RefreshTokenRepository;
+import com.aramolla.jwt.global.response.error.ErrorCode;
+import com.aramolla.jwt.member.domain.Role;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtValidator {
@@ -18,7 +26,6 @@ public class JwtValidator {
         jwtParser.parseToken(token);
     }
 
-    // TODO: REDIS이용하여 AT, RT 유효성 검증 로직 구축
 
     // 토큰으로부터 Member 정보와  권한을 들고온다.
     public TokenInfo getMemberInfoFromToken(String token) {
@@ -33,15 +40,22 @@ public class JwtValidator {
     }
 
 
-    private boolean isValidateTokens(String token) {
+    public boolean isValidateTokens(String token) {
         try {
-            jwtParser.parseToken(token);
+            Claims claims = jwtParser.parseToken(token).getPayload(); // 토큰 기간 만료 확인, 클레임 정보 추츨
             return true;
-        } catch (ExpiredJwtException e) { // 만료 되었으면 통과 안되었으면 탈취 간주
-            return false;
-        } catch (Exception e) { // 다른 에러일 경우에도 폐기
-            return false;
+        } catch (SecurityException | MalformedJwtException e) {
+            log.error(ErrorCode.TOKEN_ERROR.getMessage() + token);
+        } catch (ExpiredJwtException e) {
+            log.error(ErrorCode.TOKEN_EXPIRED.getMessage() + token);
+        } catch (UnsupportedJwtException e) {
+            log.error(ErrorCode.TOKEN_HASH_NOT_SUPPORTED.getMessage() + token);
+        } catch (IllegalArgumentException e) {
+            log.error(ErrorCode.BAD_REQUEST_TOKEN.getMessage() + token);
         }
+        return false;
     }
+
+
 
 }

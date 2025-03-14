@@ -8,6 +8,7 @@ import com.aramolla.jwt.auth.jwt.token.JwtProvider;
 import com.aramolla.jwt.auth.jwt.token.JwtValidator;
 import com.aramolla.jwt.member.domain.Member;
 import com.aramolla.jwt.auth.dto.request.MemberCreateRequest;
+import com.aramolla.jwt.member.domain.Role;
 import com.aramolla.jwt.member.repository.MemberRepository;
 import com.aramolla.jwt.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -49,22 +50,22 @@ public class AuthService {
 
         return jwtProvider.createTokensAndSaveRefreshToken(
             member.getId(),
-            member.getRole().getDisplayName()
+            member.getRole()
         );
     }
 
     public MemberTokens reissue(String refreshToken) {
 
-        jwtValidator.validateToken(refreshToken);
-        Long memberId = jwtValidator.getMemberIdFromToken(refreshToken);
-        String role = jwtValidator.getRoleFromToken(refreshToken);
+//        jwtValidator.validateToken(refreshToken);
+//        Long memberId = jwtValidator.getMemberIdFromToken(refreshToken);
+//        String role = jwtValidator.getRoleFromToken(refreshToken);
 
-        // TODO: redis에 저장되어있는 AT 유효성 체크 및 RT 변조 체크
+        // AT 재발급시 RT도 재발급(일회성)
+        // -> 공격자가 탈취 후 새로 발급 받은 후 사용자가 재발급했을 때 DB RT와 사용자 RT가 다르기에 탈취 간주로 둘 다 폐기.
+        MemberTokens memberTokens = jwtProvider.reissueToken(refreshToken);
 
-        jwtCleaner.deleteRefreshToken(memberId);     // refresh token 은 일회용이라 삭제
-        MemberTokens memberTokens = jwtProvider.createTokensAndSaveRefreshToken(memberId, role);// access token & refresh token 재발급
-        log.info("memberTokens: " + memberTokens.accessToken());
-        log.info("memberTokens: " + memberTokens.refreshToken());
+        log.info("service accessToken: " + memberTokens.accessToken());
+        log.info("service refreshToken: " + memberTokens.refreshToken());
         return memberTokens;
     }
 

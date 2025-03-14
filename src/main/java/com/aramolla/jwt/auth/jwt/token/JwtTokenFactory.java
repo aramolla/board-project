@@ -2,6 +2,7 @@ package com.aramolla.jwt.auth.jwt.token;
 
 import com.aramolla.jwt.auth.jwt.domain.RefreshToken;
 import com.aramolla.jwt.auth.jwt.repository.RefreshTokenRepository;
+import com.aramolla.jwt.member.domain.Role;
 import io.jsonwebtoken.Jwts;
 import java.util.Date;
 import javax.crypto.SecretKey;
@@ -26,7 +27,7 @@ public class JwtTokenFactory {
     public String createToken(
         Long memberId,
         SecretKey key,
-        String role,
+        Role role,
         String category,
         Long expiredMs
     ) {
@@ -44,11 +45,13 @@ public class JwtTokenFactory {
     // RT 생성 후 DB 저장
     public void saveRefreshToken(
         String refreshToken,
-        Long memberId
+        Long memberId,
+        Role role
     ) {
         RefreshToken newRefreshToken = RefreshToken.builder()
             .refreshToken(refreshToken)
             .memberId(memberId)
+            .role(role)
             .build();
 
         refreshTokenRepository.save(newRefreshToken);
