@@ -3,6 +3,8 @@ package com.aramolla.jwt.auth.jwt.config;
 import com.aramolla.jwt.auth.jwt.filter.JwtFilter;
 import com.aramolla.jwt.auth.jwt.handler.JwtAccessDeniedHandler;
 import com.aramolla.jwt.auth.jwt.handler.JwtAuthenticationEntryPoint;
+import com.aramolla.jwt.auth.oauth2.handler.CustomSuccessHandler;
+import com.aramolla.jwt.auth.oauth2.service.CustomOAuth2UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +35,8 @@ public class SecurityConfig {
     private final JwtFilter jwtFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomSuccessHandler customSuccessHandler;
     private final String[] adminUrl = {"/admin/**"};
     private final String[] permitAllUrl = {"/", "/error", "/auth/**"};
     private final String[] hasRoleUrl = {"/posts/**", "/members/**"};
@@ -57,6 +61,14 @@ public class SecurityConfig {
             .sessionManagement((session) -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .cors((cors)->cors.configurationSource(getCorsConfiguration())); // cors 설정 추가
+
+        //oauth2
+        // customOAuth2UserService을 등록하여 리소스서버(google, naver의 사용자 정보 API)에서 데이터를 받아 OAuth2UserService에 데이터를 집어넣어줌
+        http
+            .oauth2Login((oauth2) -> oauth2
+                .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
+                    .userService(customOAuth2UserService))
+                .successHandler(customSuccessHandler)); // 로그인 성공 시 실행 핸들러
 
         //경로별 인가 작업
         http

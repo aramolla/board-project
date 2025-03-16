@@ -1,5 +1,6 @@
 package com.aramolla.jwt.member.domain;
 
+import com.aramolla.jwt.auth.oauth2.domain.SocialType;
 import com.aramolla.jwt.global.domain.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,7 +26,10 @@ public class Member extends BaseEntity {
     @Column(name = "member_id", updatable = false)
     private long id;
 
-    @Column(name = "email", updatable = false, unique = true)
+    @Column(name = "name", nullable = true) // LOCAL 회원가입 로직에 추가하고 nullable-false로 바꾸기
+    private String name;
+
+    @Column(name = "email", updatable = true, unique = true) // 소셜일 경우 - naver dkfk1640@naver.com
     private String email;
 
     @Column(name = "password")
@@ -35,15 +39,37 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    // OAuth2
+    @Column(name = "social_type",nullable = false)
+    @Enumerated(EnumType.STRING)
+    private SocialType socialType; // TODO: 일반 로그인일 경우 Local
+
+    @Column(name = "social_login_id",unique = true ,nullable = true)
+    private String socialLoginId;
+
     //@AllArgsConstructor대신 필요항것만 builder로 생성자 만듬
     @Builder // JPA에서 NoArgsConstructor같은 빈 생성자가 없으면 에러 남
     public Member(
+        String name,
         String email,
-        String password
+        String password,
+        SocialType socialType,
+        String socialLoginId
     ) {
+        this.name = name;
         this.email = email;
         this.password = password;
         this.role = Role.MEMBER; // 기본값으로 'MEMBER'
+        this.socialType = socialType;
+        this.socialLoginId = socialLoginId;
+    }
+
+    public void updateUsername(String username) {
+        this.email = username;
+    }
+
+    public void updatename(String nickname) {
+        this.name = nickname;
     }
 
 }

@@ -17,9 +17,7 @@ public class JwtParser {
     private final JwtProperties jwtProperties;
 
     /*
-    sub는 보통 사용자의 고유 식별자로 사용됩니다.
-    로그인한 사용자나 특정 엔터티(Entity)를 나타내는 값이 들어갑니다.
-    일반적으로 사용자의 ID 또는 이메일을 넣는 경우가 많습니다.
+    sub는 보통 사용자의 고유 식별자로 사용 - 여기서는 member_id가 sub로 사용
     * */
     public String getSubject(final String token) {
         return parseToken(token)

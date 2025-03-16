@@ -7,11 +7,11 @@ public class CookieUtil {
     // TODO: 위 내용 찾아보기
     private CookieUtil() {
     }
-    // TODO: 쿠키 찾아보세용
+
     public static Cookie createCookie(String key, String value) {
         Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(60 * 60 * 60);
-        //cookie.setSecure(true);
+        cookie.setMaxAge(60 * 60 * 60); // TODO: 쿠키 기간 refresh-token과 맞추기
+//        cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         return cookie;

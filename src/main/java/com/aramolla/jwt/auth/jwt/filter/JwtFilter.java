@@ -35,6 +35,8 @@ UserDetailsService 대신 AuthService.login 메서드가 직접 사용자 인증
 - 클라이언트가 JWT 토큰을 보내면 해당 필터가 요청을 가로챈다.
 - JWT 검증 후 UsernamePasswordAuthenticationToken 토큰(인증용 객체)을 생성
 - Authentication 객체를 SecurityContextHolder라는 곳에 저장
+========= 프론트에서 JWTFilter가 필요한 이유 =========
+프론트에서 API Client로 서버측에 요청을 보낼 때 권한이 필요한 경우 Access 토큰을 요청 헤더에 첨부한다. 이때 요청에 담긴 JWT를 검증하기 위한 JWT 필터를 만들어야
  */
 @RequiredArgsConstructor
 @Component
@@ -60,8 +62,8 @@ public class JwtFilter extends OncePerRequestFilter { //OncePerRequestFilter: �
             return;
         }
 
-        // JWT에서 토큰을 이용해 인증 정보를 추출 후 UsernamePasswordAuthenticationToken을 생성해 전달
-        // Authentication 객체를 생성하고, 이를 SecurityContext에 설정하여 이후의 요청에서 인증 정보를 사용할 수 있도록 함
+        // 검증된 토큰은 사용자 정보로 Authentication 객체를 만들고 강제로 SecurityContextHolder에 세션을 생성
+        // 이 세션은 Stateless로 관리되기 때문에 해당 요청이 끝나면 소멸
         try {
             jwtValidator.validateToken(token); // 토큰이 유효한지 검증(세션, 만료기간)
             Authentication authentication = jwtProvider.getAuthentication(token); // 인증 정보를 추출하여 UsernamePasswordAuthenticationToken형식으로 authentication에 저장

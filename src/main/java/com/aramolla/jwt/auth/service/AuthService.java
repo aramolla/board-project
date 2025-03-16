@@ -6,6 +6,7 @@ import com.aramolla.jwt.auth.jwt.dto.MemberTokens;
 import com.aramolla.jwt.auth.jwt.token.JwtCleaner;
 import com.aramolla.jwt.auth.jwt.token.JwtProvider;
 import com.aramolla.jwt.auth.jwt.token.JwtValidator;
+import com.aramolla.jwt.auth.oauth2.domain.SocialType;
 import com.aramolla.jwt.member.domain.Member;
 import com.aramolla.jwt.auth.dto.request.MemberCreateRequest;
 import com.aramolla.jwt.member.domain.Role;
@@ -37,6 +38,7 @@ public class AuthService {
         Member member = Member.builder()
             .email(request.email())
             .password(bCryptPasswordEncoder.encode(request.password()))
+            .socialType(SocialType.LOCAL)
             .build();
 
         memberRepository.save(member);
