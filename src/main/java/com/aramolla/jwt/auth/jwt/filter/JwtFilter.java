@@ -65,7 +65,7 @@ public class JwtFilter extends OncePerRequestFilter { //OncePerRequestFilter: �
         // 검증된 토큰은 사용자 정보로 Authentication 객체를 만들고 강제로 SecurityContextHolder에 세션을 생성
         // 이 세션은 Stateless로 관리되기 때문에 해당 요청이 끝나면 소멸
         try {
-            jwtValidator.validateToken(token); // 토큰이 유효한지 검증(세션, 만료기간)
+            jwtValidator.validateToken(token); // 토큰이 유효한지 검증
             Authentication authentication = jwtProvider.getAuthentication(token); // 인증 정보를 추출하여 UsernamePasswordAuthenticationToken형식으로 authentication에 저장
             SecurityContextHolder.getContext().setAuthentication(authentication); // 확인된 토큰을 기반으로 SecurityContextHolder에 일시적인 세션을 1개 만들어 authentication(유저 정보)를 일시적으로 저장하여 이 세션을 기반으로 요청을 진행
             filterChain.doFilter(request, response); // 다음 필터로 전달

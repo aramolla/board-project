@@ -58,10 +58,6 @@ public class AuthService {
 
     public MemberTokens reissue(String refreshToken) {
 
-//        jwtValidator.validateToken(refreshToken);
-//        Long memberId = jwtValidator.getMemberIdFromToken(refreshToken);
-//        String role = jwtValidator.getRoleFromToken(refreshToken);
-
         // AT 재발급시 RT도 재발급(일회성)
         // -> 공격자가 탈취 후 새로 발급 받은 후 사용자가 재발급했을 때 DB RT와 사용자 RT가 다르기에 탈취 간주로 둘 다 폐기.
         MemberTokens memberTokens = jwtProvider.reissueToken(refreshToken);

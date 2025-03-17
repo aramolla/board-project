@@ -40,6 +40,9 @@ public class AuthController {
         MemberTokens memberTokens = authService.login(request);
         // 같은 이름이 있다면 기존에 있던 쿠키 덮어짐.
         response.addCookie(CookieUtil.createCookie("refresh_token", memberTokens.refreshToken()));
+        // HTTP 응답 헤더에 Access Token을 전달
+//        response.setHeader("access_token", memberTokens.accessToken());
+        response.setHeader("Authorization", "Bearer " + memberTokens.accessToken());
 
         return ResponseData.success(SuccessCode.LOGIN_SUCCESS,
             new AccessTokenResponse(memberTokens.accessToken()));
@@ -53,6 +56,9 @@ public class AuthController {
         MemberTokens memberTokens = authService.reissue(refreshTokenRequest);
         // 같은 이름이 있다면 기존에 있던 쿠키 덮어짐.
         response.addCookie(CookieUtil.createCookie("refresh_token", memberTokens.refreshToken()));
+        // HTTP 응답 헤더에 Access Token을 전달
+//        response.setHeader("access_token", memberTokens.accessToken());
+        response.setHeader("Authorization", "Bearer " + memberTokens.accessToken());
         return ResponseData.success(SuccessCode.REISSUE_SUCCESS, new AccessTokenResponse(memberTokens.accessToken()));
 
     }

@@ -3,6 +3,7 @@ package com.aramolla.jwt.auth.jwt.config;
 import com.aramolla.jwt.auth.jwt.filter.JwtFilter;
 import com.aramolla.jwt.auth.jwt.handler.JwtAccessDeniedHandler;
 import com.aramolla.jwt.auth.jwt.handler.JwtAuthenticationEntryPoint;
+import com.aramolla.jwt.auth.oauth2.handler.CustomFailureHandler;
 import com.aramolla.jwt.auth.oauth2.handler.CustomSuccessHandler;
 import com.aramolla.jwt.auth.oauth2.service.CustomOAuth2UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,6 +38,7 @@ public class SecurityConfig {
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
+    private final CustomFailureHandler customFailureHandler;
     private final String[] adminUrl = {"/admin/**"};
     private final String[] permitAllUrl = {"/", "/error", "/auth/**"};
     private final String[] hasRoleUrl = {"/posts/**", "/members/**"};
@@ -68,7 +70,9 @@ public class SecurityConfig {
             .oauth2Login((oauth2) -> oauth2
                 .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
                     .userService(customOAuth2UserService))
-                .successHandler(customSuccessHandler)); // 로그인 성공 시 실행 핸들러
+                .successHandler(customSuccessHandler) // 로그인 성공 시 실행 핸들러
+                .failureHandler(customFailureHandler) // 로그인 실패 시 실행 핸들러
+            );
 
         //경로별 인가 작업
         http
