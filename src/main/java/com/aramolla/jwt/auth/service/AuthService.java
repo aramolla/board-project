@@ -2,14 +2,13 @@ package com.aramolla.jwt.auth.service;
 
 
 import com.aramolla.jwt.auth.dto.request.LoginRequest;
+import com.aramolla.jwt.auth.dto.request.MemberCreateRequest;
 import com.aramolla.jwt.auth.jwt.dto.MemberTokens;
 import com.aramolla.jwt.auth.jwt.token.JwtCleaner;
 import com.aramolla.jwt.auth.jwt.token.JwtProvider;
 import com.aramolla.jwt.auth.jwt.token.JwtValidator;
 import com.aramolla.jwt.auth.oauth2.domain.SocialType;
 import com.aramolla.jwt.member.domain.Member;
-import com.aramolla.jwt.auth.dto.request.MemberCreateRequest;
-import com.aramolla.jwt.member.domain.Role;
 import com.aramolla.jwt.member.repository.MemberRepository;
 import com.aramolla.jwt.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -66,7 +65,6 @@ public class AuthService {
         log.info("service refreshToken: " + memberTokens.refreshToken());
         return memberTokens;
     }
-
 
 
 }

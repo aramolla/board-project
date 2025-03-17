@@ -1,6 +1,5 @@
 package com.aramolla.jwt.auth.jwt.token;
 
-import com.aramolla.jwt.global.response.ResponseData;
 import com.aramolla.jwt.global.response.error.ErrorCode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;

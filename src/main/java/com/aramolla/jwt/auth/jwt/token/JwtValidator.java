@@ -3,10 +3,8 @@ package com.aramolla.jwt.auth.jwt.token;
 import com.aramolla.jwt.auth.jwt.dto.TokenInfo;
 import com.aramolla.jwt.auth.jwt.repository.RefreshTokenRepository;
 import com.aramolla.jwt.global.response.error.ErrorCode;
-import com.aramolla.jwt.member.domain.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.RequiredArgsConstructor;
@@ -29,9 +27,10 @@ public class JwtValidator {
 
     // 토큰으로부터 Member 정보와  권한을 들고온다.
     public TokenInfo getMemberInfoFromToken(String token) {
-        return new TokenInfo(getMemberIdFromToken(token),getRoleFromToken(token));
+        return new TokenInfo(getMemberIdFromToken(token), getRoleFromToken(token));
     }
-    public Long getMemberIdFromToken(String token){
+
+    public Long getMemberIdFromToken(String token) {
         return Long.parseLong(jwtParser.getSubject(token));
     }
 
@@ -55,7 +54,6 @@ public class JwtValidator {
         }
         return false;
     }
-
 
 
 }

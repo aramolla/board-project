@@ -6,7 +6,6 @@ import com.aramolla.jwt.auth.oauth2.dto.GoogleUserInfo;
 import com.aramolla.jwt.auth.oauth2.dto.NaverUserInfo;
 import com.aramolla.jwt.auth.oauth2.dto.OAuth2UserInfo;
 import com.aramolla.jwt.member.domain.Member;
-import com.aramolla.jwt.member.domain.Role;
 import com.aramolla.jwt.member.repository.MemberRepository;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -37,13 +36,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         // SocialType별 oAuth2UserInfo형으로 info객체를 생성
         OAuth2UserInfo oAuth2UserInfo = getOAuth2UserInfo(socialType, oAuth2User.getAttributes());
         //리소스 서버에서 발급 받은 정보로 사용자를 특정할 아이디값을 만듬 - naver dkfk1640@naver.com
-        String username = oAuth2UserInfo.getProvider()+" "+oAuth2UserInfo.getProviderId(); // 리소스에서 받은 값은 해당 유저들까리 겹칠 수 있기 떄문에 우리 서버에서 관리할 수 있는 특정한 usename을 만듬, OAuth2 로그인 시 키(PK)가 되는 값
+        String username = oAuth2UserInfo.getProvider() + " "
+            + oAuth2UserInfo.getProviderId(); // 리소스에서 받은 값은 해당 유저들까리 겹칠 수 있기 떄문에 우리 서버에서 관리할 수 있는 특정한 usename을 만듬, OAuth2 로그인 시 키(PK)가 되는 값
 
         // repository에 username이 있는지 조회
         Member existMember = memberRepository.findByEmail(username)
             .orElse(null);
 
-        if(existMember == null) { // 첫 로그인인 경우 -> repository에 회원 정보 저장
+        if (existMember == null) { // 첫 로그인인 경우 -> repository에 회원 정보 저장
             Member member = Member.builder()
                 .socialType(socialType)
                 .name(oAuth2UserInfo.getName())
@@ -56,7 +56,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             return new CustomOAuth2User(member, oAuth2User.getAttributes());
 
-        } else{ // 로그인 한 적이 있는 경우 -> 유저 정보 업데이트
+        } else { // 로그인 한 적이 있는 경우 -> 유저 정보 업데이트
             existMember.updatename(oAuth2UserInfo.getName());
             existMember.updateUsername(username); // naver dkfk1640@naver.com
 
@@ -66,7 +66,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     }
 
-    private SocialType getSocialType(String registrationId) { // registrationId, 이 아이디가 어디에서(구글,네이버) 온 값인지 확인
+    private SocialType getSocialType(
+        String registrationId) { // registrationId, 이 아이디가 어디에서(구글,네이버) 온 값인지 확인
         try {
             return SocialType.valueOf(registrationId.toUpperCase());
         } catch (IllegalArgumentException e) {
@@ -79,12 +80,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         Map<String, Object> attributes
     ) {
         switch (socialType) {
-            case GOOGLE: return new GoogleUserInfo(attributes);
-            case NAVER: return new NaverUserInfo(attributes);
-            default: throw new IllegalArgumentException("유효하지 않는 소셜 입니다.");
+            case GOOGLE:
+                return new GoogleUserInfo(attributes);
+            case NAVER:
+                return new NaverUserInfo(attributes);
+            default:
+                throw new IllegalArgumentException("유효하지 않는 소셜 입니다.");
         }
     }
-
 
 
 }

@@ -4,7 +4,6 @@ import com.aramolla.jwt.member.domain.Member;
 import com.aramolla.jwt.member.domain.Role;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -41,6 +40,7 @@ public class CustomOAuth2User implements OAuth2User {
     public String getName() {
         return member.getName();
     }
+
     public String getUsername() {
         return member.getEmail();
     }
@@ -49,7 +49,7 @@ public class CustomOAuth2User implements OAuth2User {
         return member.getId();
     }
 
-    public Role getrole(){
+    public Role getrole() {
         return member.getRole();
     }
 

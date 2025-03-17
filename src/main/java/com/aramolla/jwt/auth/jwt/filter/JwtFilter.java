@@ -40,7 +40,8 @@ UserDetailsService 대신 AuthService.login 메서드가 직접 사용자 인증
  */
 @RequiredArgsConstructor
 @Component
-public class JwtFilter extends OncePerRequestFilter { //OncePerRequestFilter: 요청에 의해서 한번만 동작, override하여 doFilterInternal을 구현함
+public class JwtFilter extends
+    OncePerRequestFilter { //OncePerRequestFilter: 요청에 의해서 한번만 동작, override하여 doFilterInternal을 구현함
 
     private final JwtProvider jwtProvider;
     private final JwtValidator jwtValidator;
@@ -55,7 +56,8 @@ public class JwtFilter extends OncePerRequestFilter { //OncePerRequestFilter: �
         HttpServletResponse response,
         FilterChain filterChain
     ) throws ServletException, IOException {
-        String token = HeaderUtil.resolveToken(request); //request에서 헤더의 Authorization 검증, 접두사 Bearer 제외하고 실제 Access 토큰 반환
+        String token = HeaderUtil.resolveToken(
+            request); //request에서 헤더의 Authorization 검증, 접두사 Bearer 제외하고 실제 Access 토큰 반환
 
         if (!StringUtils.hasText(token)) { // 빈 문자열("")**이나 공백만 있는 문자열은 false
             jwtErrorResponder.sendErrorResponse(response, ErrorCode.WRONG_AUTH_HEADER);
@@ -66,8 +68,10 @@ public class JwtFilter extends OncePerRequestFilter { //OncePerRequestFilter: �
         // 이 세션은 Stateless로 관리되기 때문에 해당 요청이 끝나면 소멸
         try {
             jwtValidator.validateToken(token); // 토큰이 유효한지 검증
-            Authentication authentication = jwtProvider.getAuthentication(token); // 인증 정보를 추출하여 UsernamePasswordAuthenticationToken형식으로 authentication에 저장
-            SecurityContextHolder.getContext().setAuthentication(authentication); // 확인된 토큰을 기반으로 SecurityContextHolder에 일시적인 세션을 1개 만들어 authentication(유저 정보)를 일시적으로 저장하여 이 세션을 기반으로 요청을 진행
+            Authentication authentication = jwtProvider.getAuthentication(
+                token); // 인증 정보를 추출하여 UsernamePasswordAuthenticationToken형식으로 authentication에 저장
+            SecurityContextHolder.getContext().setAuthentication(
+                authentication); // 확인된 토큰을 기반으로 SecurityContextHolder에 일시적인 세션을 1개 만들어 authentication(유저 정보)를 일시적으로 저장하여 이 세션을 기반으로 요청을 진행
             filterChain.doFilter(request, response); // 다음 필터로 전달
         } catch (ExpiredJwtException e) {
             jwtErrorResponder.sendErrorResponse(response, ErrorCode.TOKEN_EXPIRED);

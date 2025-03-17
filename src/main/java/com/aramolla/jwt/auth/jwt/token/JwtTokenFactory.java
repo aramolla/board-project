@@ -6,7 +6,6 @@ import com.aramolla.jwt.member.domain.Role;
 import io.jsonwebtoken.Jwts;
 import java.util.Date;
 import javax.crypto.SecretKey;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +22,7 @@ public class JwtTokenFactory {
     private static final String AUTHORITIES_KEY = "auth";
 
     private final RefreshTokenRepository refreshTokenRepository;
+
     // 토큰 생성
     public String createToken(
         Long memberId,
@@ -42,6 +42,7 @@ public class JwtTokenFactory {
             .signWith(key) //시크릿키로 시그니처를 만들어 암호화
             .compact();
     }
+
     // RT 생성 후 DB 저장
     public void saveRefreshToken(
         String refreshToken,

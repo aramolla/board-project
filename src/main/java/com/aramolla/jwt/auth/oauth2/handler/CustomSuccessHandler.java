@@ -16,14 +16,12 @@ import java.io.IOException;
 import java.util.Collection;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
 
 // OAuth2 로그인 성공하면 JWT발급해주는 코드
 @Slf4j
@@ -36,7 +34,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private static final String REDIRECT_URL = "http://localhost:3000/";
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+        Authentication authentication) throws IOException, ServletException {
 
         //OAuth2User
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
@@ -74,7 +73,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.sendRedirect("http://localhost:3000/");
 
 
-
     }
 
     // getAuthorities에서 Role객체로 꺼내기
@@ -94,4 +92,4 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     }
 
 
-    }
+}

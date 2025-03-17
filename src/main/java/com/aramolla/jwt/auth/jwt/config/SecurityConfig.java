@@ -6,7 +6,6 @@ import com.aramolla.jwt.auth.jwt.handler.JwtAuthenticationEntryPoint;
 import com.aramolla.jwt.auth.oauth2.handler.CustomFailureHandler;
 import com.aramolla.jwt.auth.oauth2.handler.CustomSuccessHandler;
 import com.aramolla.jwt.auth.oauth2.service.CustomOAuth2UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -15,7 +14,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -62,7 +60,7 @@ public class SecurityConfig {
             .httpBasic((auth) -> auth.disable())
             .sessionManagement((session) -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .cors((cors)->cors.configurationSource(getCorsConfiguration())); // cors 설정 추가
+            .cors((cors) -> cors.configurationSource(getCorsConfiguration())); // cors 설정 추가
 
         //oauth2
         // customOAuth2UserService을 등록하여 리소스서버(google, naver의 사용자 정보 API)에서 데이터를 받아 OAuth2UserService에 데이터를 집어넣어줌
@@ -82,7 +80,6 @@ public class SecurityConfig {
                 .requestMatchers(hasRoleUrl).hasAnyRole("ADMIN", "MEMBER")
                 .anyRequest().authenticated()); //다른 요청들은 로그인한 사용자들만 접근할 수 있게 설정
 
-
         // 필터 추가 - jwtFilter를 UsernamePasswordAuthenticationFilter전에 등록하여 로그인 요펑을 가로채게 함
         http
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
@@ -92,7 +89,6 @@ public class SecurityConfig {
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .accessDeniedHandler(jwtAccessDeniedHandler)
             );
-
 
         return http.build();
     }

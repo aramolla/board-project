@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class JwtProvider {
+
     private static final String ACCESS = "access";
     private static final String REFRESH = "refresh";
     private final JwtParser jwtParser;
@@ -66,10 +67,11 @@ public class JwtProvider {
     }
 
     public MemberTokens reissueToken(String refreshToken) {
-        if(!jwtValidator.isValidateTokens(refreshToken)){ // 리프레시 토큰 유효성 검증
+        if (!jwtValidator.isValidateTokens(refreshToken)) { // 리프레시 토큰 유효성 검증
             throw new JwtException(ErrorCode.TOKEN_ERROR.getMessage() + refreshToken);
         }
-        RefreshToken storedToken = getRefreshTokenInfo(refreshToken); // 입력받은 리프레시 토큰과 일치하는 storedToken(저장된 refreshToken) 조회
+        RefreshToken storedToken = getRefreshTokenInfo(
+            refreshToken); // 입력받은 리프레시 토큰과 일치하는 storedToken(저장된 refreshToken) 조회
         Long memberId = storedToken.getMemberId();
         jwtCleaner.deleteRefreshToken(memberId); // 기존 토큰 삭제
 
@@ -77,7 +79,7 @@ public class JwtProvider {
             throw new JwtException(ErrorCode.TOKEN_ERROR.getMessage() + refreshToken);
         }
         // 새로운 토큰 생성 및 저장
-        Role role= storedToken.getRole();
+        Role role = storedToken.getRole();
 
         String newAccessToken = createTokensAndSaveRefreshToken(memberId, role).accessToken();
         String newRefreshToken = createTokensAndSaveRefreshToken(memberId, role).refreshToken();

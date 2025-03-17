@@ -19,7 +19,7 @@ public class ResponseData<T> {
     private final SuccessCode successCode;
     private final ErrorCode errorCode;
     private final String timestamp;
-    private T data; // TODO: 제네릭 타입 공부하세용
+    private T data;
 
     //  <=============== SUCCESS(DATA X) ===============>
     public static ResponseEntity<ResponseData> success(SuccessCode successCode) {
