@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -38,23 +39,23 @@ public class SecurityConfig {
     private final CustomSuccessHandler customSuccessHandler;
     private final CustomFailureHandler customFailureHandler;
     private final String[] adminUrl = {"/admin/**"};
-    private final String[] permitAllUrl = {"/", "/error", "/auth/**"};
+    private final String[] permitAllUrl = {"/", "/error", "/auth/**", "/connect/**"};
     private final String[] hasRoleUrl = {"/posts/**", "/members/**"};
 
-    // TODO: 전부 다 찾아보세요.
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
         /*
-        (jwt 방식 사용할 경우)
-        - csrf를 disable설정
-            -> 세션 방식에서는 세션이 계속 고정이라 csrf공격 방어가 필수적임
-            -> jwt는 세션을 Stateless 방식으로 사용하기에 csrf disable
-        - From 로그인 방식 disable
-        - HTTP Basic 인증 방식 disable
-        - Session 설정 STATELESS
-         */
-        http
+        [Spring Security 필터 체인 순서]
+        - CORS 필터 (CorsFilter): 특정 도메인에서 요청 허용
+        - Exception Handling 필터 (JwtAuthenticationEntryPoint, JwtAccessDeniedHandler): 인증 실패 시 401(Unauthorized), 권한 없는 요청 시 403(Forbidden) 응답 처리
+        - JWT 필터 (JwtFilter)
+        - FilterSecurityInterceptor → permitAll(), hasRole() 등 접근 권한을 체크
+        - OAuth2 로그인 필터 (OAuth2LoginAuthenticationFilter): OAuth2 인증을 사용하여 사용자 정보를 가져옴
+        - 인가(Authorization) 필터
+        */
+
+
+        http // CSRF 필터, From 로그인 방식, HTTP Basic 인증 방식 비활성화, Session 설정 STATELESS
             .csrf((auth) -> auth.disable())
             .formLogin((auth) -> auth.disable())
             .httpBasic((auth) -> auth.disable())
@@ -62,8 +63,7 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .cors((cors) -> cors.configurationSource(getCorsConfiguration())); // cors 설정 추가
 
-        //oauth2
-        // customOAuth2UserService을 등록하여 리소스서버(google, naver의 사용자 정보 API)에서 데이터를 받아 OAuth2UserService에 데이터를 집어넣어줌
+        //oauth2 - 벡엔드에서 모든 책임을 지는 방식으로 인증서버, 리소스서버 모두 벡엔드에서 갔다옴
         http
             .oauth2Login((oauth2) -> oauth2
                 .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
@@ -75,14 +75,14 @@ public class SecurityConfig {
         //경로별 인가 작업
         http
             .authorizeHttpRequests((auth) -> auth
-                .requestMatchers(permitAllUrl).permitAll() //모두 허용
-                .requestMatchers(adminUrl).hasRole("ADMIN") //
+                .requestMatchers(permitAllUrl).permitAll() //  인가(Authorization) 검사를 건너뜀, 따라서 인증(Authentication)도 필요 없음
+                .requestMatchers(adminUrl).hasRole("ADMIN")
                 .requestMatchers(hasRoleUrl).hasAnyRole("ADMIN", "MEMBER")
-                .anyRequest().authenticated()); //다른 요청들은 로그인한 사용자들만 접근할 수 있게 설정
+                .anyRequest().authenticated());
 
-        // 필터 추가 - jwtFilter를 UsernamePasswordAuthenticationFilter전에 등록하여 로그인 요펑을 가로채게 함
+        // 필터 추가
         http
-            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class); // UsernamePasswordAuthenticationFilter - 폼 로그인 방식을 사용하지 않으므로, 이 필터는 사용되지 않음.
         // 예외 처리 등록
         http
             .exceptionHandling(handle -> handle

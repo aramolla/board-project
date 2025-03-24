@@ -51,26 +51,11 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         log.info("발급된 Refresh Token : {}", refreshToken);
 
         response.addCookie(CookieUtil.createCookie("refresh_token", refreshToken));
-        // HTTP 응답 헤더에 AT을 전달
-//        response.setHeader("access_token", accessToken);
-        response.setHeader("Authorization", "Bearer " + accessToken);
         // RT 저장
         jwtTokenFactory.saveRefreshToken(refreshToken, memberId, role);
 
-        // Access 토큰을 ResponseEntity를 사용하여 JSON으로 응답
-        ResponseEntity<ResponseData<String>> responseEntity = ResponseData.success(
-            SuccessCode.LOGIN_SUCCESS, // 적절한 SuccessCode를 사용
-            accessToken
-        );
-
-        // ObjectMapper를 사용하여 ResponseEntity를 JSON 문자열로 변환
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonResponse = objectMapper.writeValueAsString(responseEntity.getBody());
-
-        // 응답 설정 (콘솔 출력을 위한 설정, 실제 응답은 redirect로 처리)
-        log.info("Social Login Response: {}", jsonResponse);
-
-        response.sendRedirect("http://localhost:3000/");
+        log.info("리다이렉트 URL: {}", "http://localhost:3000/oauth/redirect?accessToken=" + accessToken);
+        response.sendRedirect("http://localhost:3000/oauth/redirect?accessToken=" + accessToken);
 
 
     }

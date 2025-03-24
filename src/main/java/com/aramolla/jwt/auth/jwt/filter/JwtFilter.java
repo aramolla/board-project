@@ -59,6 +59,12 @@ public class JwtFilter extends
         String token = HeaderUtil.resolveToken(
             request); //request에서 헤더의 Authorization 검증, 접두사 Bearer 제외하고 실제 Access 토큰 반환
 
+        // 웹소켓 예외 처리
+        if ("websocket".equalsIgnoreCase(request.getHeader("Upgrade"))) {
+            filterChain.doFilter(request, response); // WebSocket 요청은 필터를 건너뜀
+            return;
+        }
+
         if (!StringUtils.hasText(token)) { // 빈 문자열("")**이나 공백만 있는 문자열은 false
             jwtErrorResponder.sendErrorResponse(response, ErrorCode.WRONG_AUTH_HEADER);
             return;
