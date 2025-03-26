@@ -50,7 +50,7 @@ public class AuthService {
         Member member = memberService.validateLogin(request.email(), request.password());
 
         return jwtProvider.createTokensAndSaveRefreshToken(
-            member.getId(),
+            member.getEmail(),
             member.getRole()
         );
     }

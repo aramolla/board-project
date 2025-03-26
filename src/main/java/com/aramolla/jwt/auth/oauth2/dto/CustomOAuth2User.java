@@ -43,7 +43,7 @@ public class CustomOAuth2User implements OAuth2User {
 
     public String getUsername() {
         return member.getEmail();
-    }
+    } // username이 없어서 email을 넣음
 
     public Long getId() {
         return member.getId();

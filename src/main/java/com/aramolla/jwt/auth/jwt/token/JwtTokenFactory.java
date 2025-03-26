@@ -25,7 +25,7 @@ public class JwtTokenFactory {
 
     // 토큰 생성
     public String createToken(
-        Long memberId,
+        String email,
         SecretKey key,
         Role role,
         String category,
@@ -34,8 +34,8 @@ public class JwtTokenFactory {
         Date date = new Date(); // 토큰 발행 시간
         Date validity = new Date(date.getTime() + expiredMs); // 만료 기간 설정
 
-        return Jwts.builder()
-            .subject(String.valueOf(memberId))
+        return Jwts.builder() // 토큰 payload에 email, role이 포함되어 있음
+            .subject(email)
             .claim(CATEGORY_KEY, category) // claim payload
             .claim(AUTHORITIES_KEY, role)
             .expiration(validity)
@@ -46,12 +46,12 @@ public class JwtTokenFactory {
     // RT 생성 후 DB 저장
     public void saveRefreshToken(
         String refreshToken,
-        Long memberId,
+        String email,
         Role role
     ) {
         RefreshToken newRefreshToken = RefreshToken.builder()
             .refreshToken(refreshToken)
-            .memberId(memberId)
+            .email(email)
             .role(role)
             .build();
 

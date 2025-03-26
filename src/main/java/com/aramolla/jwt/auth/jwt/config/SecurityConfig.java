@@ -75,7 +75,7 @@ public class SecurityConfig {
         //경로별 인가 작업
         http
             .authorizeHttpRequests((auth) -> auth
-                .requestMatchers(permitAllUrl).permitAll() //  인가(Authorization) 검사를 건너뜀, 따라서 인증(Authentication)도 필요 없음
+                .requestMatchers(permitAllUrl).permitAll() // 인가(Authorization) 검사를 건너뜀, 따라서 인증(Authentication)도 필요 없음
                 .requestMatchers(adminUrl).hasRole("ADMIN")
                 .requestMatchers(hasRoleUrl).hasAnyRole("ADMIN", "MEMBER")
                 .anyRequest().authenticated());

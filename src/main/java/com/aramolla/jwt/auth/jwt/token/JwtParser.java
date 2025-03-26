@@ -15,9 +15,7 @@ public class JwtParser {
     private static final String AUTHORITIES_KEY = "auth";
     private final JwtProperties jwtProperties;
 
-    /*
-    sub는 보통 사용자의 고유 식별자로 사용 - 여기서는 member_id가 sub로 사용
-    * */
+    // JWT의 subject 값을 그대로 반환, 여기서는 member_id가 sub로 사용
     public String getSubject(final String token) {
         return parseToken(token)
             .getPayload()
