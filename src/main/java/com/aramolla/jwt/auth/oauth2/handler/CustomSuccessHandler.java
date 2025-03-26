@@ -40,10 +40,10 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         //OAuth2User
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
         // username과 role값을 획득
-        Long memberId = oAuth2User.getId();
+        String email = oAuth2User.getUsername(); // username이 없어서 oAuth2User username에 email을 넣음
         Role role = oAuth2User.getrole();//getRoleFromAuthentication(oAuth2User.getAuthorities());
         // AT, RT 만들고 쿠키를 이용해 보내기
-        MemberTokens tokens = jwtProvider.createTokensAndSaveRefreshToken(memberId, role);
+        MemberTokens tokens = jwtProvider.createTokensAndSaveRefreshToken(email, role);
         // MemberTokens에서 AT, RT 추출하여 문자열로 변환
         String accessToken = tokens.accessToken();
         log.info("발급된 Access Token : {}", accessToken);
@@ -52,7 +52,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         response.addCookie(CookieUtil.createCookie("refresh_token", refreshToken));
         // RT 저장
-        jwtTokenFactory.saveRefreshToken(refreshToken, memberId, role);
+        jwtTokenFactory.saveRefreshToken(refreshToken, email, role);
 
         log.info("리다이렉트 URL: {}", "http://localhost:3000/oauth/redirect?accessToken=" + accessToken);
         response.sendRedirect("http://localhost:3000/oauth/redirect?accessToken=" + accessToken);

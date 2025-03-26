@@ -13,7 +13,7 @@ public class JwtCleaner {
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional
-    public void deleteRefreshToken(Long memberId) {
-        refreshTokenRepository.deleteById(memberId);
+    public void deleteRefreshToken(String email) {
+        refreshTokenRepository.deleteByEmail(email);
     }
 }

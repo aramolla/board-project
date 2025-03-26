@@ -47,22 +47,22 @@ public class JwtProvider {
         this.jwtCleaner = jwtCleaner;
     }
 
-    public MemberTokens createTokensAndSaveRefreshToken(Long memberId, Role roleType) {
+    public MemberTokens createTokensAndSaveRefreshToken(String email, Role roleType) {
         String accessToken = jwtTokenFactory.createToken(
-            memberId,
+            email,
             secretKey,
             roleType,
             ACCESS,
             accessTokenExpireTime
         );
         String refreshToken = jwtTokenFactory.createToken(
-            memberId,
+            email,
             secretKey,
             roleType,
             REFRESH,
             refreshTokenExpireTime
         );
-        jwtTokenFactory.saveRefreshToken(refreshToken, memberId, roleType);
+        jwtTokenFactory.saveRefreshToken(refreshToken, email, roleType);
         return new MemberTokens(accessToken, refreshToken);
     }
 
@@ -72,8 +72,8 @@ public class JwtProvider {
         }
         RefreshToken storedToken = getRefreshTokenInfo(
             refreshToken); // 입력받은 리프레시 토큰과 일치하는 storedToken(저장된 refreshToken) 조회
-        Long memberId = storedToken.getMemberId();
-        jwtCleaner.deleteRefreshToken(memberId); // 기존 토큰 삭제
+        String email = storedToken.getEmail();
+        jwtCleaner.deleteRefreshToken(email); // 기존 토큰 삭제
 
         if (!refreshToken.equals(storedToken.getRefreshToken())) { // 리프레시 토큰 일치 여부 확인
             throw new JwtException(ErrorCode.TOKEN_ERROR.getMessage() + refreshToken);
@@ -81,8 +81,8 @@ public class JwtProvider {
         // 새로운 토큰 생성 및 저장
         Role role = storedToken.getRole();
 
-        String newAccessToken = createTokensAndSaveRefreshToken(memberId, role).accessToken();
-        String newRefreshToken = createTokensAndSaveRefreshToken(memberId, role).refreshToken();
+        String newAccessToken = createTokensAndSaveRefreshToken(email, role).accessToken();
+        String newRefreshToken = createTokensAndSaveRefreshToken(email, role).refreshToken();
         return new MemberTokens(newAccessToken, newRefreshToken);
     }
 
@@ -102,7 +102,6 @@ public class JwtProvider {
     public RefreshToken getRefreshTokenInfo(String refreshToken) {
         return refreshTokenRepository.findByRefreshToken(refreshToken) // 저장된 refreshToken 찾아서 반환
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 refresh token"));
-        // TODO: 공부하세요. Optional && orElseThrow()
     }
 
 }

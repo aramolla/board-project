@@ -15,8 +15,8 @@ import lombok.NoArgsConstructor;
 @Entity
 public class RefreshToken {
 
-    @Id
-    private Long memberId;
+    @Id // subject로 email을 설정
+    private String email;
 
     @Column(name = "refreshtoken", nullable = false)
     private String refreshToken;
@@ -28,11 +28,11 @@ public class RefreshToken {
     @Builder(builderClassName = "SaveBuilder", builderMethodName = "builder")
     public RefreshToken(
         String refreshToken,
-        Long memberId,
+        String email,
         Role role
     ) {
         this.refreshToken = refreshToken;
-        this.memberId = memberId;
+        this.email = email;
         this.role = role;
     }
 
